@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
 import struct
 import subprocess
 import sys
@@ -47,15 +48,31 @@ for page in all_pages:
     width, height = struct.unpack(">II", data[16:24])
     assert width >= 500 and height >= 500 and len(data) > 1000, (page.name, width, height, len(data))
 
-info = call(["pdfinfo", str(pdf)])
-match = re.search(r"^Pages:\s+(\d+)$", info, flags=re.MULTILINE)
-assert match and int(match.group(1)) == 5, info
-text = call(["pdftotext", "-layout", str(pdf), "-"])
+if all(shutil.which(tool) for tool in ("pdfinfo", "pdftotext", "pdftoppm")):
+    info = call(["pdfinfo", str(pdf)])
+    match = re.search(r"^Pages:\s+(\d+)$", info, flags=re.MULTILINE)
+    assert match and int(match.group(1)) == 5, info
+    page_count = int(match.group(1))
+    text = call(["pdftotext", "-layout", str(pdf), "-"])
+    pdf_pages = OUT / "pdf-pages"
+    pdf_pages.mkdir(exist_ok=True)
+    call(["pdftoppm", "-r", "72", "-png", str(pdf), str(pdf_pages / "pdf")])
+    rasterized_pages = len(list(pdf_pages.glob("pdf-*.png")))
+    assert rasterized_pages == 5, "all PDF pages must rasterize for visual review"
+    pdf_inspector = "poppler"
+else:
+    # The standard Windows runner does not provide Poppler. pypdf is a
+    # pinned, test-only, pure-Python parser; native PNG page exports remain
+    # separately checked above. No PDF rasterization is claimed here.
+    from pypdf import PdfReader
+
+    reader = PdfReader(str(pdf))
+    page_count = len(reader.pages)
+    assert page_count == 5, page_count
+    text = " ".join(page.extract_text() or "" for page in reader.pages)
+    rasterized_pages = None
+    pdf_inspector = "pypdf"
 assert MARKER in " ".join(text.split()), "the edited story is missing from selectable PDF text"
-pdf_pages = OUT / "pdf-pages"
-pdf_pages.mkdir(exist_ok=True)
-call(["pdftoppm", "-r", "72", "-png", str(pdf), str(pdf_pages / "pdf")])
-assert len(list(pdf_pages.glob("pdf-*.png"))) == 5, "all PDF pages must rasterize for visual review"
 
 idml_check = {"attempted": True, "roundTripPassed": False}
 try:
@@ -75,8 +92,9 @@ report = {
     "parentCount": len(reopened["parents"]),
     "paragraphStyleCount": len(reopened["paragraphStyles"]),
     "pngPages": len(all_pages),
-    "pdfPages": int(match.group(1)),
-    "pdfRenderedPages": 5,
+    "pdfPages": page_count,
+    "pdfRenderedPages": rasterized_pages,
+    "pdfInspector": pdf_inspector,
     "pdfSelectableEdit": True,
     "idml": idml_check,
 }

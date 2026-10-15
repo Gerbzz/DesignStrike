@@ -40,7 +40,10 @@ def screenshot(name):
 deadline = time.monotonic() + 120
 while time.monotonic() < deadline:
     try:
-        os.kill(PID, 0)
+        # POSIX signal 0 checks liveness. On Windows, os.kill(pid, 0) can
+        # terminate the process; the control request below proves liveness.
+        if os.name != "nt":
+            os.kill(PID, 0)
         state = request("ui.inspect")
         if state.get("window", [0, 0])[0] >= 1400:
             break
