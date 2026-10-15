@@ -15,7 +15,7 @@ MARKER = "DesignStrike synthetic publication proof"
 
 def run(*args):
     command = [str(CLI), "run", *args]
-    result = subprocess.run(command, capture_output=True, text=True, timeout=180, check=False)
+    result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", timeout=180, check=False)
     if result.returncode:
         raise RuntimeError(f"{command!r} failed: {result.stderr}\n{result.stdout}")
     return result.stdout

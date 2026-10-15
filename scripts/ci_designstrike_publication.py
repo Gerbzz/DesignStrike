@@ -21,7 +21,7 @@ before_hash = hashlib.sha256(native.read_bytes()).hexdigest()
 
 
 def call(args):
-    result = subprocess.run(args, capture_output=True, text=True, timeout=180, check=False)
+    result = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", timeout=180, check=False)
     with (OUT / "cli.log").open("a", encoding="utf-8") as log:
         log.write("$ " + " ".join(map(str, args)) + "\n")
         log.write(result.stdout + "\n" + result.stderr + "\n")
