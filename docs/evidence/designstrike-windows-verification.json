@@ -1,0 +1,16 @@
+{
+  "nativeSha256Unchanged": "7f59fbd846066e0a53870b1823dd3998867a38873537aac98646e562dd3a789e",
+  "reopenedPages": 5,
+  "parentCount": 1,
+  "paragraphStyleCount": 15,
+  "pngPages": 5,
+  "pdfPages": 5,
+  "pdfRenderedPages": null,
+  "pdfInspector": "pypdf",
+  "pdfSelectableEdit": true,
+  "idml": {
+    "attempted": true,
+    "roundTripPassed": true,
+    "pageCount": 5
+  }
+}
