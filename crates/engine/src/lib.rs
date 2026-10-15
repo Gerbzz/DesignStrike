@@ -618,10 +618,18 @@ fn primary_flow_changed(before: &Document, after: &Document) -> bool {
     if old.frames != new.frames {
         return false;
     }
-    old.frames.iter().any(|id| {
+    if old.frames.iter().any(|id| {
         let (Some(a), Some(b)) = (before.item(*id), after.item(*id)) else { return false };
         a.bounds() != b.bounds() || a.text_frame().map(|f| &f.options) != b.text_frame().map(|f| &f.options)
-    })
+    }) {
+        return true;
+    }
+    // A wrapped object can change the space available to a primary frame without changing the
+    // story or the frame itself. Compare the exclusions the composer actually uses, so an
+    // unrelated object edit still cannot recreate a page or frame deleted on purpose.
+    let before_specs = designcraft_compose::frame_specs(before, sid);
+    let after_specs = designcraft_compose::frame_specs(after, sid);
+    before_specs.into_iter().map(|spec| spec.exclusions).ne(after_specs.into_iter().map(|spec| spec.exclusions))
 }
 
 fn push_undo(st: &mut DocState, e: HistoryEntry) {

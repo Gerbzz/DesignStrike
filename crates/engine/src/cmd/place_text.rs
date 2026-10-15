@@ -497,6 +497,9 @@ mod reflow_tests {
         assert_eq!(s.doc().unwrap().doc.page_count(), 2, "wrap should move the primary story to a new page");
         assert_eq!(s.doc().unwrap().doc.story(designcraft_doc::StoryId(sid)).unwrap().frames.len(), 2);
         s.doc().unwrap().doc.check().unwrap();
+
+        s.execute("object.textWrap", &json!({"ids": [blocker], "mode": "none"})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), 1, "removing wrap should remove the empty trailing page");
     }
 
     #[test]
@@ -540,8 +543,10 @@ mod reflow_tests {
 
         s.execute("layout.pages.delete", &json!({"pages": [before - 1]})).unwrap();
         assert_eq!(s.doc().unwrap().doc.page_count(), before - 1, "explicit page deletion must be honored");
-        s.execute("frame.create", &json!({"spread": 0, "rect": [10, 10, 30, 30]})).unwrap();
+        let away = s.execute("frame.create", &json!({"spread": 0, "rect": [10, 10, 30, 30]})).unwrap()["id"].as_u64().unwrap();
         assert_eq!(s.doc().unwrap().doc.page_count(), before - 1, "unrelated edits must not recreate deleted pages");
+        s.execute("object.textWrap", &json!({"ids": [away], "mode": "boundingBox"})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), before - 1, "wrap outside primary frames must not recreate deleted pages");
 
         let n = s.doc().unwrap().doc.story(designcraft_doc::StoryId(sid)).unwrap().len();
         s.execute("text.select", &json!({"story": sid, "anchor": n, "focus": n})).unwrap();
