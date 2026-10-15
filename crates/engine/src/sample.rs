@@ -449,3 +449,22 @@ fn build() -> designcraft_doc::Result<Document> {
     debug_assert!(d.check().is_ok(), "{:?}", d.check());
     Ok(d)
 }
+
+#[cfg(test)]
+mod tests {
+    use designcraft_compose::Cache;
+    use designcraft_render::{RenderOptions, Renderer};
+
+    use super::magazine;
+
+    #[test]
+    fn new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork() {
+        let mut doc = magazine();
+        doc.insert_pages(Some(3), 1, None).unwrap();
+        let mut renderer = Renderer::new();
+        renderer.threads = 0;
+        let page = renderer.render_page(&doc, &Cache::new(), 4, 1.0, true, &RenderOptions::default()).unwrap();
+        assert_eq!((page.width, page.height), (621, 810), "inside bleed must not include the neighboring page");
+        assert_eq!(page.pixel(0, 200), [255, 255, 255, 255], "page four artwork must stop at the spine");
+    }
+}

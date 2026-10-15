@@ -38,6 +38,15 @@ jobs:
         run: cargo build --locked --profile smoke -p designcraft -p designcraft-cli
       - name: Test independent product links
         run: cargo test --locked --profile smoke -p designcraft-engine project_links_are_owned_by_the_fork
+      - name: Test page deletion and inside-bleed regressions
+        run: |
+          mkdir -p "$RUNNER_TEMP/designstrike-evidence"
+          set +e
+          cargo test --locked --profile smoke -p designcraft-engine explicitly_deleted_primary_story_ 2>&1 | tee "$RUNNER_TEMP/designstrike-evidence/regression-tests.log"
+          reflow_status=${PIPESTATUS[0]}
+          cargo test --locked --profile smoke -p designcraft-engine new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork 2>&1 | tee -a "$RUNNER_TEMP/designstrike-evidence/regression-tests.log"
+          bleed_status=${PIPESTATUS[0]}
+          test "$reflow_status" -eq 0 && test "$bleed_status" -eq 0
       - name: Drive native application and save a multi-page document
         run: xvfb-run -a -s "-screen 0 1440x900x24" bash scripts/ci_designstrike_native.sh target/smoke/designcraft "$RUNNER_TEMP/designstrike-evidence"
       - name: Reopen and export the actual publication
@@ -61,5 +70,6 @@ jobs:
             ${{ runner.temp }}/designstrike-evidence/verification.json
             ${{ runner.temp }}/designstrike-evidence/desktop.log
             ${{ runner.temp }}/designstrike-evidence/cli.log
+            ${{ runner.temp }}/designstrike-evidence/regression-tests.log
           if-no-files-found: ignore
           retention-days: 1
