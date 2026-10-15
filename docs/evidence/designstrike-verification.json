@@ -1,10 +1,11 @@
 {
-  "nativeSha256Unchanged": "2f0571521895d2cc032a5a94fb5c00c17debbefd8ff868261d2d992449c45de0",
+  "nativeSha256Unchanged": "410b9addc1d13d52519eacc130c838f3bf7f12df8f128deb171da45668b865d7",
   "reopenedPages": 5,
   "parentCount": 1,
   "paragraphStyleCount": 15,
   "pngPages": 5,
   "pdfPages": 5,
+  "pdfRenderedPages": 5,
   "pdfSelectableEdit": true,
   "idml": {
     "attempted": true,

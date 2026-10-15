@@ -21,7 +21,7 @@ The inherited sample magazine and CLI provide a reproducible way to exercise pag
 
 ## Verified native workflow
 
-The [bounded hosted run](https://github.com/Gerbzz/DesignStrike/actions/runs/38727509672) built the full desktop and CLI, edited and saved a five-page publication in the native application, reopened it in a separate CLI process, and exported [PDF](docs/evidence/designstrike-synthetic-publication.pdf), page PNGs and an IDML round trip. The [verification report](docs/evidence/designstrike-verification.json) and [screenshots](docs/DESIGNSTRIKE_STATUS.md#verification) show what passed and what still needs visual fidelity work.
+The [bounded hosted run](https://github.com/Gerbzz/DesignStrike/actions/runs/38729864589) built the full desktop and CLI, passed the focused deletion/bleed regressions and the engine/renderer library suites, edited and saved a five-page publication in the native application, reopened it in a separate CLI process, and exported [PDF](docs/evidence/designstrike-synthetic-publication.pdf), five page PNGs and an IDML round trip. All five PNG and PDF pages were visually inspected. The [verification report](docs/evidence/designstrike-verification.json) and [evidence index](docs/DESIGNSTRIKE_STATUS.md#verification) record the exact checks and limits.
 
 ![DesignStrike welcome screen on Ubuntu 24.04](docs/images/designstrike-welcome-ubuntu24.png)
 
@@ -29,4 +29,4 @@ The [bounded hosted run](https://github.com/Gerbzz/DesignStrike/actions/runs/387
 
 ## Current limits
 
-DesignCraft's [gap list](docs/gaps.md) identifies a Primary Text Frame autoflow bug that can add pages users cannot delete. Real publication work also needs validated layout fidelity, fonts, preflight, PDF output, and platform-specific behavior. No installer or production-readiness claim is made here.
+The reported Primary Text Frame deletion case now has a verified focused fix; the upstream [gap list](docs/gaps.md) remains open for broader text-flow cases. Real publication work also needs validated layout fidelity, fonts, preflight, PDF output, and platform-specific behavior. No installer or production-readiness claim is made here.
