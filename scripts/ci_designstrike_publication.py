@@ -52,6 +52,10 @@ match = re.search(r"^Pages:\s+(\d+)$", info, flags=re.MULTILINE)
 assert match and int(match.group(1)) == 5, info
 text = call(["pdftotext", "-layout", str(pdf), "-"])
 assert MARKER in " ".join(text.split()), "the edited story is missing from selectable PDF text"
+pdf_pages = OUT / "pdf-pages"
+pdf_pages.mkdir(exist_ok=True)
+call(["pdftoppm", "-r", "72", "-png", str(pdf), str(pdf_pages / "pdf")])
+assert len(list(pdf_pages.glob("pdf-*.png"))) == 5, "all PDF pages must rasterize for visual review"
 
 idml_check = {"attempted": True, "roundTripPassed": False}
 try:
@@ -72,6 +76,7 @@ report = {
     "paragraphStyleCount": len(reopened["paragraphStyles"]),
     "pngPages": len(all_pages),
     "pdfPages": int(match.group(1)),
+    "pdfRenderedPages": 5,
     "pdfSelectableEdit": True,
     "idml": idml_check,
 }

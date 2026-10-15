@@ -110,7 +110,9 @@ fn build() -> designcraft_doc::Result<Document> {
         margins: Margins { top: 54.0, bottom: 54.0, inside: 54.0, outside: 42.0 },
         columns: 3,
         gutter: 14.0,
-        bleed: [9.0; 4],
+        // Facing pages share a spine: an inside bleed would copy ink from the neighboring page
+        // when either page is exported separately. Keep the 9 pt outside/top/bottom bleed.
+        bleed: [9.0, 9.0, 0.0, 9.0],
         ..Default::default()
     });
     d.title = "Quarterly — Spring Issue".into();
@@ -374,7 +376,7 @@ fn build() -> designcraft_doc::Result<Document> {
     // Page 4: color page.
     let s2 = SpreadRef::Doc(2);
     let id = ItemId(d.alloc());
-    let mut bg = Item::new(id, lid, Shape::Rectangle, shapes::rectangle(Rect::new(-9.0, -9.0, w + 9.0, 396.0)));
+    let mut bg = Item::new(id, lid, Shape::Rectangle, shapes::rectangle(Rect::new(-9.0, -9.0, w, 396.0)));
     bg.fill = Fill::swatch("Ink Plum");
     d.insert_item(s2, bg, None)?;
     let (_, k) = text(&mut d, s2, Rect::new(42.0, 80.0, 400.0, 100.0), "Coming next", "Kicker")?;

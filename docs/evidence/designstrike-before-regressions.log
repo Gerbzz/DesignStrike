@@ -1,0 +1,55 @@
+    Finished `smoke` profile [unoptimized] target(s) in 0.19s
+     Running unittests src/lib.rs (target/smoke/deps/designcraft_engine-1b88f7f1032106b8)
+
+running 2 tests
+test cmd::place_text::reflow_tests::explicitly_deleted_primary_story_page_stays_deleted_until_text_changes ... FAILED
+test cmd::place_text::reflow_tests::explicitly_deleted_primary_story_frame_stays_deleted_until_text_changes ... FAILED
+
+failures:
+
+---- cmd::place_text::reflow_tests::explicitly_deleted_primary_story_page_stays_deleted_until_text_changes stdout ----
+
+thread 'cmd::place_text::reflow_tests::explicitly_deleted_primary_story_page_stays_deleted_until_text_changes' (11209) panicked at crates/engine/src/cmd/place_text.rs:523:9:
+assertion `left == right` failed: explicit page deletion must be honored
+  left: 3
+ right: 2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- cmd::place_text::reflow_tests::explicitly_deleted_primary_story_frame_stays_deleted_until_text_changes stdout ----
+
+thread 'cmd::place_text::reflow_tests::explicitly_deleted_primary_story_frame_stays_deleted_until_text_changes' (11208) panicked at crates/engine/src/cmd/place_text.rs:545:9:
+assertion `left == right` failed: explicit frame deletion must be honored
+  left: 3
+ right: 2
+
+
+failures:
+    cmd::place_text::reflow_tests::explicitly_deleted_primary_story_frame_stays_deleted_until_text_changes
+    cmd::place_text::reflow_tests::explicitly_deleted_primary_story_page_stays_deleted_until_text_changes
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 564 filtered out; finished in 1.09s
+
+error: test failed, to rerun pass `-p designcraft-engine --lib`
+    Finished `smoke` profile [unoptimized] target(s) in 0.18s
+     Running unittests src/lib.rs (target/smoke/deps/designcraft_engine-1b88f7f1032106b8)
+
+running 1 test
+test sample::tests::new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork ... FAILED
+
+failures:
+
+---- sample::tests::new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork stdout ----
+
+thread 'sample::tests::new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork' (11218) panicked at crates/engine/src/sample.rs:467:9:
+assertion `left == right` failed: inside bleed must not include the neighboring page
+  left: (630, 810)
+ right: (621, 810)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    sample::tests::new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 565 filtered out; finished in 2.95s
+
+error: test failed, to rerun pass `-p designcraft-engine --lib`

@@ -47,6 +47,10 @@ jobs:
           cargo test --locked --profile smoke -p designcraft-engine new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork 2>&1 | tee -a "$RUNNER_TEMP/designstrike-evidence/regression-tests.log"
           bleed_status=${PIPESTATUS[0]}
           test "$reflow_status" -eq 0 && test "$bleed_status" -eq 0
+      - name: Run engine and renderer library suites
+        run: |
+          cargo test --locked --profile smoke -p designcraft-engine --lib
+          cargo test --locked --profile smoke -p designcraft-render --lib
       - name: Drive native application and save a multi-page document
         run: xvfb-run -a -s "-screen 0 1440x900x24" bash scripts/ci_designstrike_native.sh target/smoke/designcraft "$RUNNER_TEMP/designstrike-evidence"
       - name: Reopen and export the actual publication
@@ -61,8 +65,8 @@ jobs:
             ${{ runner.temp }}/designstrike-evidence/about.png
             ${{ runner.temp }}/designstrike-evidence/editor.png
             ${{ runner.temp }}/designstrike-evidence/edited-page.png
-            ${{ runner.temp }}/designstrike-evidence/pages/page-001.png
-            ${{ runner.temp }}/designstrike-evidence/pages/page-005.png
+            ${{ runner.temp }}/designstrike-evidence/pages/page-*.png
+            ${{ runner.temp }}/designstrike-evidence/pdf-pages/pdf-*.png
             ${{ runner.temp }}/designstrike-evidence/publication.pdf
             ${{ runner.temp }}/designstrike-evidence/native-inspect.json
             ${{ runner.temp }}/designstrike-evidence/reopened-inspect.json
