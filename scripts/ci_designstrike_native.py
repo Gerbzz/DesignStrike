@@ -63,14 +63,18 @@ assert any(parent["items"] > 0 for parent in sample["parents"])
 request("engine.execute", {"command": "layout.pages.insert", "params": {"count": 1}})
 expanded = request("document.inspect")
 assert expanded["pageCount"] == 5
-spread = expanded["spreads"][-1]["index"]
+last_spread = expanded["spreads"][-1]
+spread = last_spread["index"]
+last_page = last_spread["pages"][-1]
+assert last_page["index"] == 4
+page_x = last_page["bounds"][0]
 request(
     "engine.execute",
     {
         "command": "frame.create",
         "params": {
             "spread": spread,
-            "rect": [60, 80, 485, 150],
+            "rect": [page_x + 60, 80, page_x + 485, 150],
             "content": "text",
             "text": MARKER,
             "caret": False,
