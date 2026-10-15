@@ -1,0 +1,160 @@
+    Finished `smoke` profile [unoptimized] target(s) in 0.19s
+     Running unittests src/lib.rs (target/smoke/deps/designcraft_engine-1b88f7f1032106b8)
+
+running 2 tests
+test cmd::place_text::reflow_tests::explicitly_deleted_primary_story_frame_stays_deleted_until_text_changes ... ok
+test cmd::place_text::reflow_tests::explicitly_deleted_primary_story_page_stays_deleted_until_text_changes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 564 filtered out; finished in 1.11s
+
+     Running tests/book_safety.rs (target/smoke/deps/book_safety-bbb133b65422056b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+     Running tests/browser_print.rs (target/smoke/deps/browser_print-46f0b017e2d5e91c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/character_style_from_selection.rs (target/smoke/deps/character_style_from_selection-9fe248e6eaecf3df)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+     Running tests/collection_state_atomicity.rs (target/smoke/deps/collection_state_atomicity-5590ee264b6d7274)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/distribute_locks.rs (target/smoke/deps/distribute_locks-905ef00acf753f1d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/insert_pages_bounds.rs (target/smoke/deps/insert_pages_bounds-46055f5fe448dd9f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/preflight_resolution.rs (target/smoke/deps/preflight_resolution-3941c7154b0b4142)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+     Running tests/primary_frame_columns.rs (target/smoke/deps/primary_frame_columns-6d0faa81b5d0bf21)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/save_state_atomicity.rs (target/smoke/deps/save_state_atomicity-fd04a8b13d6e490e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/text_decorations.rs (target/smoke/deps/text_decorations-2dfe3797f19308c0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/text_thread_regressions.rs (target/smoke/deps/text_thread_regressions-fdf948c522318b12)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/thread_color_safety.rs (target/smoke/deps/thread_color_safety-189a5a8354636e31)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+    Finished `smoke` profile [unoptimized] target(s) in 0.19s
+     Running unittests src/lib.rs (target/smoke/deps/designcraft_engine-1b88f7f1032106b8)
+
+running 1 test
+test sample::tests::new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 565 filtered out; finished in 2.96s
+
+     Running tests/book_safety.rs (target/smoke/deps/book_safety-bbb133b65422056b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+     Running tests/browser_print.rs (target/smoke/deps/browser_print-46f0b017e2d5e91c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/character_style_from_selection.rs (target/smoke/deps/character_style_from_selection-9fe248e6eaecf3df)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+     Running tests/collection_state_atomicity.rs (target/smoke/deps/collection_state_atomicity-5590ee264b6d7274)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/distribute_locks.rs (target/smoke/deps/distribute_locks-905ef00acf753f1d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/insert_pages_bounds.rs (target/smoke/deps/insert_pages_bounds-46055f5fe448dd9f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/preflight_resolution.rs (target/smoke/deps/preflight_resolution-3941c7154b0b4142)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+     Running tests/primary_frame_columns.rs (target/smoke/deps/primary_frame_columns-6d0faa81b5d0bf21)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/save_state_atomicity.rs (target/smoke/deps/save_state_atomicity-fd04a8b13d6e490e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/text_decorations.rs (target/smoke/deps/text_decorations-2dfe3797f19308c0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/text_thread_regressions.rs (target/smoke/deps/text_thread_regressions-fdf948c522318b12)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/thread_color_safety.rs (target/smoke/deps/thread_color_safety-189a5a8354636e31)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
