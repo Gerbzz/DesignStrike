@@ -30,6 +30,8 @@ jobs:
         run: |
           rustup toolchain install 1.95.0 --profile minimal
           rustup default 1.95.0
+      - name: Test wrap-triggered primary story reflow
+        run: cargo test --locked --profile smoke -p designcraft-engine wrapping_object_reflows_primary_story_onto_a_new_page
       - name: Install native display and PDF inspection tools
         run: |
           sudo apt-get update -qq

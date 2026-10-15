@@ -481,6 +481,25 @@ mod reflow_tests {
     use crate::Session;
 
     #[test]
+    fn wrapping_object_reflows_primary_story_onto_a_new_page() {
+        let mut s = Session::new();
+        s.execute("file.new", &json!({"pages": 1, "primaryTextFrame": true, "facingPages": false})).unwrap();
+        let sid = s.doc().unwrap().doc.settings.primary_story.expect("primary story").0;
+        s.execute("text.select", &json!({"story": sid, "anchor": 0, "focus": 0})).unwrap();
+        s.execute("text.insert", &json!({"text": "A short primary story must flow around an overlapping object."})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), 1, "text fits before wrap");
+
+        let blocker = s.execute("frame.create", &json!({"spread": 0, "rect": [0, 0, 612, 792], "content": "unassigned"})).unwrap()["id"]
+            .as_u64()
+            .unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), 1, "unwrapped object does not displace text");
+        s.execute("object.textWrap", &json!({"ids": [blocker], "mode": "boundingBox"})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), 2, "wrap should move the primary story to a new page");
+        assert_eq!(s.doc().unwrap().doc.story(designcraft_doc::StoryId(sid)).unwrap().frames.len(), 2);
+        s.doc().unwrap().doc.check().unwrap();
+    }
+
+    #[test]
     fn smart_text_reflow_adds_and_removes_pages() {
         let mut s = Session::new();
         s.execute("file.new", &json!({"pages": 1, "primaryTextFrame": true})).unwrap();
