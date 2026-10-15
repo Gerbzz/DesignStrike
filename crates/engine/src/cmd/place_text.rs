@@ -481,6 +481,28 @@ mod reflow_tests {
     use crate::Session;
 
     #[test]
+    fn wrapping_object_reflows_primary_story_onto_a_new_page() {
+        let mut s = Session::new();
+        s.execute("file.new", &json!({"pages": 1, "primaryTextFrame": true, "facingPages": false})).unwrap();
+        let sid = s.doc().unwrap().doc.settings.primary_story.expect("primary story").0;
+        s.execute("text.select", &json!({"story": sid, "anchor": 0, "focus": 0})).unwrap();
+        s.execute("text.insert", &json!({"text": "A short primary story must flow around an overlapping object."})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), 1, "text fits before wrap");
+
+        let blocker = s.execute("frame.create", &json!({"spread": 0, "rect": [0, 0, 612, 792], "content": "unassigned"})).unwrap()["id"]
+            .as_u64()
+            .unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), 1, "unwrapped object does not displace text");
+        s.execute("object.textWrap", &json!({"ids": [blocker], "mode": "boundingBox"})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), 2, "wrap should move the primary story to a new page");
+        assert_eq!(s.doc().unwrap().doc.story(designcraft_doc::StoryId(sid)).unwrap().frames.len(), 2);
+        s.doc().unwrap().doc.check().unwrap();
+
+        s.execute("object.textWrap", &json!({"ids": [blocker], "mode": "none"})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), 1, "removing wrap should remove the empty trailing page");
+    }
+
+    #[test]
     fn smart_text_reflow_adds_and_removes_pages() {
         let mut s = Session::new();
         s.execute("file.new", &json!({"pages": 1, "primaryTextFrame": true})).unwrap();
@@ -507,6 +529,46 @@ mod reflow_tests {
         s.execute("prefs.set", &json!({"smartTextReflow": false})).unwrap();
         s.execute("text.insert", &json!({"text": long})).unwrap();
         assert_eq!(s.doc().unwrap().doc.page_count(), 1);
+    }
+
+    #[test]
+    fn explicitly_deleted_primary_story_page_stays_deleted_until_text_changes() {
+        let mut s = Session::new();
+        s.execute("file.new", &json!({"pages": 1, "primaryTextFrame": true})).unwrap();
+        let sid = s.doc().unwrap().doc.settings.primary_story.expect("primary story").0;
+        s.execute("text.select", &json!({"story": sid, "anchor": 0, "focus": 0})).unwrap();
+        s.execute("text.insert", &json!({"text": "A long primary story needs another page. ".repeat(300)})).unwrap();
+        let before = s.doc().unwrap().doc.page_count();
+        assert!(before > 1);
+
+        s.execute("layout.pages.delete", &json!({"pages": [before - 1]})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), before - 1, "explicit page deletion must be honored");
+        let away = s.execute("frame.create", &json!({"spread": 0, "rect": [10, 10, 30, 30]})).unwrap()["id"].as_u64().unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), before - 1, "unrelated edits must not recreate deleted pages");
+        s.execute("object.textWrap", &json!({"ids": [away], "mode": "boundingBox"})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.page_count(), before - 1, "wrap outside primary frames must not recreate deleted pages");
+
+        let n = s.doc().unwrap().doc.story(designcraft_doc::StoryId(sid)).unwrap().len();
+        s.execute("text.select", &json!({"story": sid, "anchor": n, "focus": n})).unwrap();
+        s.execute("text.insert", &json!({"text": " Reflow again."})).unwrap();
+        assert!(s.doc().unwrap().doc.page_count() >= before, "story edits may resume Smart Text Reflow");
+    }
+
+    #[test]
+    fn explicitly_deleted_primary_story_frame_stays_deleted_until_text_changes() {
+        let mut s = Session::new();
+        s.execute("file.new", &json!({"pages": 1, "primaryTextFrame": true})).unwrap();
+        let sid = s.doc().unwrap().doc.settings.primary_story.expect("primary story");
+        s.execute("text.select", &json!({"story": sid.0, "anchor": 0, "focus": 0})).unwrap();
+        s.execute("text.insert", &json!({"text": "A long primary story needs another frame. ".repeat(300)})).unwrap();
+        let before = s.doc().unwrap().doc.story(sid).unwrap().frames.len();
+        assert!(before > 1);
+        let last = s.doc().unwrap().doc.story(sid).unwrap().frames[before - 1];
+
+        s.execute("edit.clear", &json!({"ids": [last.0]})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.story(sid).unwrap().frames.len(), before - 1, "explicit frame deletion must be honored");
+        s.execute("frame.create", &json!({"spread": 0, "rect": [10, 10, 30, 30]})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.story(sid).unwrap().frames.len(), before - 1, "unrelated edits must not recreate the frame");
     }
 }
 

@@ -477,7 +477,12 @@ impl Session {
             st.active_layer = st.doc.default_layer();
         }
         self.record_transform(id, params);
-        if self.prefs.smart_text_reflow && spec.undoable {
+        // A deliberate page/frame deletion may leave the primary story overset. Reflowing after
+        // every undoable command would immediately recreate what the user just removed, even
+        // after an unrelated shape edit. Resume when the story or its layout actually changes.
+        let reflow_needed =
+            before.as_ref().is_some_and(|(uid, old)| self.active().is_some_and(|st| st.uid == *uid && primary_flow_changed(old, &st.doc)));
+        if self.prefs.smart_text_reflow && spec.undoable && reflow_needed {
             self.smart_reflow();
         }
         // Live captions follow their sources.
@@ -596,6 +601,35 @@ impl Session {
         self.reset_find_scope();
         Ok(r)
     }
+}
+
+/// Only a change that can alter the primary story's fit should run Smart Text Reflow. A frame
+/// removed on purpose is absent from `frames` but has not edited the story itself; its overset
+/// text remains available until the designer edits the story or its remaining layout again.
+fn primary_flow_changed(before: &Document, after: &Document) -> bool {
+    let Some(sid) = after.settings.primary_story else { return false };
+    if before.settings.primary_story != Some(sid) {
+        return true;
+    }
+    let (Some(old), Some(new)) = (before.story(sid), after.story(sid)) else { return false };
+    if old.rev != new.rev || before.styles != after.styles {
+        return true;
+    }
+    if old.frames != new.frames {
+        return false;
+    }
+    if old.frames.iter().any(|id| {
+        let (Some(a), Some(b)) = (before.item(*id), after.item(*id)) else { return false };
+        a.bounds() != b.bounds() || a.text_frame().map(|f| &f.options) != b.text_frame().map(|f| &f.options)
+    }) {
+        return true;
+    }
+    // A wrapped object can change the space available to a primary frame without changing the
+    // story or the frame itself. Compare the exclusions the composer actually uses, so an
+    // unrelated object edit still cannot recreate a page or frame deleted on purpose.
+    let before_specs = designcraft_compose::frame_specs(before, sid);
+    let after_specs = designcraft_compose::frame_specs(after, sid);
+    before_specs.into_iter().map(|spec| spec.exclusions).ne(after_specs.into_iter().map(|spec| spec.exclusions))
 }
 
 fn push_undo(st: &mut DocState, e: HistoryEntry) {

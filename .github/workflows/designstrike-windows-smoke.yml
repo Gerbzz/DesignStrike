@@ -1,0 +1,80 @@
+name: DesignStrike Windows bounded smoke
+
+on:
+  push:
+    branches: [feature/designstrike-publication-proof]
+    paths:
+      - .github/workflows/designstrike-windows-smoke.yml
+      - scripts/ci-windows-requirements.txt
+      - scripts/ci_designstrike_native.py
+      - scripts/ci_designstrike_windows_create.py
+      - scripts/ci_designstrike_publication.py
+      - scripts/ci_windows_native.ps1
+      - apps/**
+      - crates/**
+      - Cargo.toml
+      - Cargo.lock
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-publication:
+    if: github.repository == 'Gerbzz/DesignStrike'
+    runs-on: windows-2025
+    timeout-minutes: 55
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust and small PDF inspector
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.95.0 --profile minimal
+          python -m pip install --no-deps --only-binary=:all: --require-hashes -r scripts/ci-windows-requirements.txt
+      - name: Build complete native editor and CLI
+        shell: pwsh
+        run: cargo +1.95.0 build --locked --profile smoke -p designcraft -p designcraft-cli
+      - name: Run page deletion and facing-page bleed regressions
+        shell: pwsh
+        run: |
+          cargo +1.95.0 test --locked --profile smoke -p designcraft-engine explicitly_deleted_primary_story_
+          if ($LASTEXITCODE -ne 0) { throw 'Explicit page deletion regression failed' }
+          cargo +1.95.0 test --locked --profile smoke -p designcraft-engine new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork
+          if ($LASTEXITCODE -ne 0) { throw 'Facing page bleed regression failed' }
+      - name: Create and reopen a five-page native file using the Windows CLI
+        shell: pwsh
+        run: |
+          python scripts/ci_designstrike_windows_create.py target/smoke/designcraft-cli.exe "$env:RUNNER_TEMP/designstrike-windows"
+          if ($LASTEXITCODE -ne 0) { throw 'Windows CLI native document creation failed' }
+      - name: Drive the native editor and save a five-page publication
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/ci_windows_native.ps1 -Executable target/smoke/designcraft.exe -Output "$env:RUNNER_TEMP/designstrike-windows"
+      - name: Reopen and export publication using Windows CLI
+        shell: pwsh
+        run: |
+          python scripts/ci_designstrike_publication.py target/smoke/designcraft-cli.exe "$env:RUNNER_TEMP/designstrike-windows"
+          if ($LASTEXITCODE -ne 0) { throw 'Windows publication export failed' }
+      - name: Preserve only small Windows publication evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: designstrike-windows-evidence
+          path: |
+            ${{ runner.temp }}/designstrike-windows/welcome.png
+            ${{ runner.temp }}/designstrike-windows/about.png
+            ${{ runner.temp }}/designstrike-windows/editor.png
+            ${{ runner.temp }}/designstrike-windows/edited-page.png
+            ${{ runner.temp }}/designstrike-windows/pages/page-5.png
+            ${{ runner.temp }}/designstrike-windows/verification.json
+            ${{ runner.temp }}/designstrike-windows/native-inspect.json
+            ${{ runner.temp }}/designstrike-windows/reopened-inspect.json
+            ${{ runner.temp }}/designstrike-windows/cli-created-inspect.json
+            ${{ runner.temp }}/designstrike-windows/desktop-status.json
+          retention-days: 1
+          if-no-files-found: ignore

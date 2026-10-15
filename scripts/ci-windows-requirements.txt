@@ -1,0 +1,2 @@
+# Test-only PDF parser; the wheel is 310 KB and BSD-3-Clause licensed.
+pypdf==5.8.0 --hash=sha256:bfe861285cd2f79cceecefde2d46901e4ee992a9f4b42c56548c4a6e9236a0d1
