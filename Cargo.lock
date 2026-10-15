@@ -1182,6 +1182,7 @@ dependencies = [
  "designcraft-tools",
  "egui",
  "egui_kittest",
+ "image",
  "log",
  "regex",
  "serde",
