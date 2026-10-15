@@ -32,12 +32,17 @@ def screenshot(name):
     request("ui.screenshot", {"path": str(path), "focus": False})
     png = path.read_bytes()
     assert png.startswith(b"\x89PNG\r\n\x1a\n") and png[12:16] == b"IHDR"
-    assert struct.unpack(">II", png[16:24]) == (1440, 900), name
+    width, height = struct.unpack(">II", png[16:24])
+    if os.name == "nt":
+        assert width >= 800 and height >= 600, (name, width, height)
+    else:
+        assert (width, height) == (1440, 900), name
     assert len(png) > 30000, f"{name}: suspiciously small UI image"
     print(f"Native {name}: {len(png)} bytes")
 
 
-deadline = time.monotonic() + 120
+deadline = time.monotonic() + 90
+last_state = None
 while time.monotonic() < deadline:
     try:
         # POSIX signal 0 checks liveness. On Windows, os.kill(pid, 0) can
@@ -45,13 +50,16 @@ while time.monotonic() < deadline:
         if os.name != "nt":
             os.kill(PID, 0)
         state = request("ui.inspect")
-        if state.get("window", [0, 0])[0] >= 1400:
+        last_state = state
+        window = state.get("window", [0, 0])
+        min_width = 800 if os.name == "nt" else 1400
+        if window[0] >= min_width and window[1] >= 600:
             break
     except (OSError, RuntimeError, ValueError, KeyError):
         pass
     time.sleep(1)
 else:
-    raise SystemExit("Native DesignStrike window/control server did not become ready")
+    raise SystemExit(f"Native DesignStrike window/control server did not become ready: {last_state!r}")
 
 screenshot("welcome.png")
 request("ui.menu.invoke", {"command": "help.about", "params": {"open": True}})

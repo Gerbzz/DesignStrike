@@ -30,6 +30,16 @@ try {
         main_window_handle = $process.MainWindowHandle.ToInt64()
     } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $directory 'desktop-status.json')
 }
+catch {
+    [ordered]@{
+        platform = 'windows-2025'
+        process_running = !$process.HasExited
+        native_control_workflow = 'failed'
+        error = $_.Exception.Message
+        main_window_handle = $process.MainWindowHandle.ToInt64()
+    } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $directory 'desktop-status.json')
+    throw
+}
 finally {
     if (!$process.HasExited) { $process.Kill() }
     $process.Dispose()

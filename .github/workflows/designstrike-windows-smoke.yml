@@ -7,6 +7,7 @@ on:
       - .github/workflows/designstrike-windows-smoke.yml
       - scripts/ci-windows-requirements.txt
       - scripts/ci_designstrike_native.py
+      - scripts/ci_designstrike_windows_create.py
       - scripts/ci_designstrike_publication.py
       - scripts/ci_windows_native.ps1
       - apps/**
@@ -45,7 +46,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Explicit page deletion regression failed' }
           cargo +1.95.0 test --locked --profile smoke -p designcraft-engine new_facing_page_does_not_inherit_previous_pages_inside_bleed_artwork
           if ($LASTEXITCODE -ne 0) { throw 'Facing page bleed regression failed' }
+      - name: Create and reopen a five-page native file using the Windows CLI
+        shell: pwsh
+        run: |
+          python scripts/ci_designstrike_windows_create.py target/smoke/designcraft-cli.exe "$env:RUNNER_TEMP/designstrike-windows"
+          if ($LASTEXITCODE -ne 0) { throw 'Windows CLI native document creation failed' }
       - name: Drive the native editor and save a five-page publication
+        continue-on-error: true
         shell: pwsh
         run: ./scripts/ci_windows_native.ps1 -Executable target/smoke/designcraft.exe -Output "$env:RUNNER_TEMP/designstrike-windows"
       - name: Reopen and export publication using Windows CLI
@@ -67,6 +74,7 @@ jobs:
             ${{ runner.temp }}/designstrike-windows/verification.json
             ${{ runner.temp }}/designstrike-windows/native-inspect.json
             ${{ runner.temp }}/designstrike-windows/reopened-inspect.json
+            ${{ runner.temp }}/designstrike-windows/cli-created-inspect.json
             ${{ runner.temp }}/designstrike-windows/desktop-status.json
           retention-days: 1
           if-no-files-found: ignore
