@@ -181,8 +181,9 @@ mod tests {
     fn relative_packaged_links_prefer_the_document_folder_to_the_working_directory() {
         let shadow = tempfile::Builder::new().prefix(".dc-relative-link-").tempdir_in(std::env::current_dir().unwrap()).unwrap();
         let package = tempfile::tempdir().unwrap();
-        let relative = format!("{}/logo.png", shadow.path().file_name().unwrap().to_string_lossy());
-        let packaged = package.path().join(&relative);
+        let folder = shadow.path().file_name().unwrap();
+        let relative = format!("{}/logo.png", folder.to_string_lossy());
+        let packaged = package.path().join(folder).join("logo.png");
         std::fs::create_dir_all(packaged.parent().unwrap()).unwrap();
         let other = designcraft_render::Rendered { width: 2, height: 2, pixels: [0, 0, 0, 255].repeat(4) }.to_png();
         std::fs::write(shadow.path().join("logo.png"), other).unwrap();

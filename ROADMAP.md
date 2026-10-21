@@ -347,7 +347,7 @@ list) · [roadmap.md](docs/roadmap.md) (milestones, plan) · [parity-checklist.m
 
 Newest first.
 
-- **2026-10-21** · Room source port of official DesignCraft stroke-type validation (`14603a56`) and relative package links (`bad330b2`). Synthetic regressions and exact-head PR quality/native publication gates added; hosted results pending. Local heavy builds remain reserved for another suite task. DesignStrike output guards and branding preserved. No readiness percentage change; see `docs/DESIGNSTRIKE_STATUS.md`.
+- **2026-10-21** · Room source port of official DesignCraft stroke-type validation (`14603a56`) and relative package links (`bad330b2`). Synthetic regressions and exact-head PR quality/native publication gates added; hosted results tracked in [PR #2](https://github.com/Gerbzz/DesignStrike/pull/2). Local heavy builds remain reserved for another suite task. DesignStrike output guards and branding preserved. No readiness percentage change; see `docs/DESIGNSTRIKE_STATUS.md`.
 
 - **2026-10-14** · The Type tool draws a new text frame over a locked empty frame, as InDesign does, instead of turning the locked frame into a text frame. No readiness percentage change.
 - **2026-10-14** · 100% black shows as pure black on screen by default, as InDesign's Appearance of Black does out of the box (Display All Blacks as Rich Black); Preferences › Appearance of Black › Display All Blacks Accurately still shows it as the dark grey it prints, and a saved choice is kept. No readiness percentage change.
