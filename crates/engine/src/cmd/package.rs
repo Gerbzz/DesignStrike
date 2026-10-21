@@ -519,7 +519,7 @@ mod tests {
         assert_eq!(std::fs::read(moved.join("RelativePackage.designcraft")).unwrap(), native, "opening never rewrites the package");
         // Links > Copy Link(s) To still relinks the live document to the full destination path.
         s.execute("links.copyTo", &json!({"dir": dir.join("Copies").to_string_lossy()})).unwrap();
-        assert_eq!(s.doc().unwrap().doc.assets.values().next().unwrap().link.as_deref(), dir.join("Copies/my photo.png").to_str());
+        assert_eq!(s.doc().unwrap().doc.assets.values().next().unwrap().link.as_deref(), dir.join("Copies").join("my photo.png").to_str());
         std::fs::remove_dir_all(dir).unwrap();
     }
 
