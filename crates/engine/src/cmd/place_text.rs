@@ -489,9 +489,8 @@ mod reflow_tests {
         s.execute("text.insert", &json!({"text": "A short primary story must flow around an overlapping object."})).unwrap();
         assert_eq!(s.doc().unwrap().doc.page_count(), 1, "text fits before wrap");
 
-        let blocker = s.execute("frame.create", &json!({"spread": 0, "rect": [0, 0, 612, 792], "content": "unassigned"})).unwrap()["id"]
-            .as_u64()
-            .unwrap();
+        let blocker =
+            s.execute("frame.create", &json!({"spread": 0, "rect": [0, 0, 612, 792], "content": "unassigned"})).unwrap()["id"].as_u64().unwrap();
         assert_eq!(s.doc().unwrap().doc.page_count(), 1, "unwrapped object does not displace text");
         s.execute("object.textWrap", &json!({"ids": [blocker], "mode": "boundingBox"})).unwrap();
         assert_eq!(s.doc().unwrap().doc.page_count(), 2, "wrap should move the primary story to a new page");
