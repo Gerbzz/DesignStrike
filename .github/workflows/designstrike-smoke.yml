@@ -1,6 +1,15 @@
 name: DesignStrike bounded publication proof
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/designstrike-smoke.yml
+      - scripts/ci_designstrike_*
+      - apps/**
+      - crates/**
+      - Cargo.toml
+      - Cargo.lock
   push:
     branches: [feature/designstrike-publication-proof]
     paths-ignore: ["docs/**", "README.md", "ASSETS.md"]
@@ -20,6 +29,9 @@ jobs:
       WGPU_BACKEND: "gl"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - name: Confirm environment and source identity
         run: |
           rustc --version
