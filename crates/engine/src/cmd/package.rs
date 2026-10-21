@@ -18,6 +18,9 @@ use serde_json::{Value, json};
 
 const MAX_OUTPUT_COMPONENT_BYTES: usize = 200;
 
+/// The folder of a package that holds the files its document places.
+const LINKS_FOLDER: &str = "Links";
+
 fn path_error(path: &Path, message: impl std::fmt::Display) -> EngineError {
     EngineError::Other(format!("{}: {message}", path.display()))
 }
@@ -282,7 +285,10 @@ fn unique_name(base: String, taken: &mut Vec<String>) -> String {
 }
 
 /// Write each asset's bytes into `dir`; returns the relinked document and the paths written.
-fn write_links(d: &Document, root: &OutputRoot, dir: &Path, only: Option<&[AssetId]>) -> Result<(Document, Vec<PathBuf>)> {
+/// `relative_to` names the folder `dir` is, beside the saved document: the links then read
+/// `Links/logo.png`, so a package holds no path from the machine that made it (#340). `None` links
+/// the copies by their full paths (Links › Copy Link(s) To, which relinks the open document).
+fn write_links(d: &Document, root: &OutputRoot, dir: &Path, only: Option<&[AssetId]>, relative_to: Option<&str>) -> Result<(Document, Vec<PathBuf>)> {
     root.validate_directory(dir)?;
     let mut out = d.clone();
     let mut taken = Vec::new();
@@ -303,7 +309,10 @@ fn write_links(d: &Document, root: &OutputRoot, dir: &Path, only: Option<&[Asset
         let path = dir.join(&name);
         root.write(&path, a.data.as_slice())?;
         let mut na = (**a).clone();
-        na.link = Some(path.to_string_lossy().to_string());
+        na.link = Some(match relative_to {
+            Some(folder) => format!("{folder}/{name}"),
+            None => path.to_string_lossy().to_string(),
+        });
         out.assets.insert(id, Arc::new(na));
         written.push(path);
     }
@@ -369,8 +378,8 @@ fn package(s: &mut Session, p: &Value) -> Result<Value> {
     let links = s.execute("links.list", &json!({}))?;
     let pre = s.execute("preflight.run", &json!({})).unwrap_or(Value::Null);
     let d = s.doc()?.doc.clone();
-    let links_dir = root.child("Links")?;
-    let (packed, mut files) = write_links(&d, &root, &links_dir, None)?;
+    let links_dir = root.child(LINKS_FOLDER)?;
+    let (packed, mut files) = write_links(&d, &root, &links_dir, None, Some(LINKS_FOLDER))?;
     let doc_path = package_output_path(&dir, &title, "designcraft")?;
     root.write(&doc_path, &super::to_bytes(&packed))?;
     files.insert(0, doc_path);
@@ -442,7 +451,7 @@ fn copy_links(s: &mut Session, p: &Value) -> Result<Value> {
     let only: Option<Vec<AssetId>> = p.get("assets").and_then(Value::as_array).map(|a| a.iter().filter_map(Value::as_u64).map(AssetId).collect());
     let d = s.doc()?.doc.clone();
     let root = OutputRoot::new(dir.clone())?;
-    let (relinked, written) = write_links(&d, &root, &dir, only.as_deref())?;
+    let (relinked, written) = write_links(&d, &root, &dir, only.as_deref(), None)?;
     s.edit(|doc, _| {
         doc.assets = relinked.assets;
         Ok(())
@@ -453,6 +462,66 @@ fn copy_links(s: &mut Session, p: &Value) -> Result<Value> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn package_documents_hold_relative_links_only() {
+        let nonce = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
+        let dir = std::env::temp_dir().join(format!("dc-package-relative-{}-{nonce}", std::process::id()));
+        let original = dir.join("original");
+        let moved = dir.join("moved");
+        let png = designcraft_render::Rendered { width: 4, height: 3, pixels: [30, 90, 180, 255].repeat(12) }.to_png();
+        let mut s = Session::new();
+        s.execute("file.new", &json!({"title": "RelativePackage", "width": 72, "height": 72})).unwrap();
+        s.execute("file.place", &json!({"base64": super::super::base64_encode(&png), "name": "my photo.png", "x": 5, "y": 5, "width": 16})).unwrap();
+        let before = s.doc().unwrap().doc.clone();
+        s.execute("file.package", &json!({"dir": original.to_string_lossy(), "idml": true, "pdf": false})).unwrap();
+        assert!(Arc::ptr_eq(&before, &s.doc().unwrap().doc), "packaging leaves the open document unchanged");
+        let native = std::fs::read(original.join("RelativePackage.designcraft")).unwrap();
+        let packed = super::super::from_bytes(&native).unwrap();
+        let asset = packed.assets.values().next().unwrap();
+        assert_eq!(asset.link.as_deref(), Some("Links/my photo.png"));
+        assert_eq!(*asset.data, png);
+        assert_eq!(std::fs::read(original.join("Links/my photo.png")).unwrap(), png);
+
+        // Inspect the actual packaged IDML, including URL escaping and absence of machine paths.
+        let idml = std::fs::read(original.join("RelativePackage.idml")).unwrap();
+        let mut zip = zip::ZipArchive::new(std::io::Cursor::new(&idml)).unwrap();
+        let mut spreads = String::new();
+        for i in 0..zip.len() {
+            let mut file = zip.by_index(i).unwrap();
+            if file.name().starts_with("Spreads/") && file.name().ends_with(".xml") {
+                std::io::Read::read_to_string(&mut file, &mut spreads).unwrap();
+            }
+        }
+        assert!(spreads.contains(r#"LinkResourceURI="file:Links/my%20photo.png""#), "{spreads}");
+        assert!(!spreads.contains(&dir.file_name().unwrap().to_string_lossy().into_owned()), "{spreads}");
+        let unembedded = designcraft_idml::export_idml_with(&packed, &designcraft_idml::ExportOptions { embed_images: false });
+        let imported = designcraft_idml::import_idml_with(&unembedded, &|_| None).unwrap();
+        let asset = imported.assets.values().next().unwrap();
+        assert!(asset.data.is_empty());
+        assert_eq!(asset.link.as_deref(), Some("Links/my photo.png"));
+        std::fs::write(original.join("Unembedded.idml"), unembedded).unwrap();
+
+        // Remove the old location and reopen native, embedded IDML, and external-only IDML.
+        std::fs::rename(&original, &moved).unwrap();
+        let expected = std::path::absolute(moved.join("Links/my photo.png")).unwrap();
+        for (command, name) in
+            [("file.open", "RelativePackage.designcraft"), ("file.openIdml", "RelativePackage.idml"), ("file.openIdml", "Unembedded.idml")]
+        {
+            let mut opened = Session::new();
+            opened.execute(command, &json!({"path": moved.join(name).to_string_lossy()})).unwrap();
+            let asset = opened.doc().unwrap().doc.assets.values().next().unwrap();
+            assert_eq!(*asset.data, png, "{name}: preserve pixels after relocation");
+            assert_eq!(asset.link.as_deref(), expected.to_str(), "{name}");
+            assert_eq!(opened.execute("links.list", &json!({})).unwrap()[0]["status"], "ok", "{name}");
+            opened.doc().unwrap().doc.check().unwrap();
+        }
+        assert_eq!(std::fs::read(moved.join("RelativePackage.designcraft")).unwrap(), native, "opening never rewrites the package");
+        // Links > Copy Link(s) To still relinks the live document to the full destination path.
+        s.execute("links.copyTo", &json!({"dir": dir.join("Copies").to_string_lossy()})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.assets.values().next().unwrap().link.as_deref(), dir.join("Copies").join("my photo.png").to_str());
+        std::fs::remove_dir_all(dir).unwrap();
+    }
 
     #[test]
     fn relocated_packages_rebind_embedded_image_links_on_open() {

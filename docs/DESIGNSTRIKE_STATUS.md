@@ -36,6 +36,38 @@ A separate Windows CLI process reopened the native file and exported five page P
 
 [Windows run 38772715620](https://github.com/Gerbzz/DesignStrike/actions/runs/38772715620) also passed at the same fix commit: native editor and CLI build, existing deletion and bleed regressions, five-page native save/reopen, and five-page PNG/PDF and IDML export. The Windows PDF was inspected structurally for page count and selectable edited text, not rasterized or visually checked. The wrap regression itself ran in the Ubuntu workflow.
 
+## Room source port, 2026-10-21
+
+The isolated Room branch ports official DesignCraft commits
+[`14603a56`](https://github.com/storytold/designcraft/commit/14603a56e1463cfac5c871f2b6f59640e9de9dec)
+(stroke type validation) and
+[`bad330b2`](https://github.com/storytold/designcraft/commit/bad330b2182a93a728a84ac5d9d56b10e47d0275)
+(relative package links) onto DesignStrike main `38b38042be295b0c96a63c696de006bc49ecb469`.
+This is a narrow source adaptation, not a full update to upstream main.
+
+`object.stroke` validates its type and permitted fields before editing, reports `BadParams`,
+and documents all supported variants. Copied package assets use `Links/name` in native and
+IDML documents. Reopen resolves relative references beside the document before looking in the
+working directory. Links > Copy Link(s) To retains its existing destination-path behavior;
+missing assets retain their missing references. Output-root validation, redirect refusal,
+portable name handling, read-root checks and staged atomic replacement remain in place.
+
+Synthetic regressions cover malformed input without document, revision, selection or history
+mutation; all 13 stroke variants; serialized relative links and escaped IDML URIs; relocated
+native, embedded IDML and unembedded IDML reopen; original package byte preservation; and a
+working-directory filename collision. No dependency, lockfile, licence, branding or generated
+contributor file changes are required. Upstream contributor registry entries are not copied,
+following this repository's contributor-entry ownership rule; the source commits above retain
+the changes' attribution.
+
+Local checks remain limited to source and lightweight verification while another suite task owns
+the heavy-build slot. The new engine regressions have **not been compiled or executed locally**.
+The [PR #2 workflows](https://github.com/Gerbzz/DesignStrike/pull/2) check out the exact PR head, run the focused regressions and `cargo xtask ci`,
+and exercise the existing Ubuntu and Windows native publication workflows. Their results remain
+tracked against each head in that PR; the earlier hosted results above apply only to their
+recorded commits and do not validate this port. Hosted acceptance does not establish acceptance
+on the Room machine.
+
 ## Remaining
 
 - Continue validating Primary Text Frame threading, overset, page removal and flow on representative publications, beyond the three focused regressions.

@@ -93,7 +93,8 @@ fn packaged_link_candidates(link: &str, dir: Option<&std::path::Path>) -> Vec<st
         let parts: Vec<&str> = link.split(['/', '\\']).filter(|part| !part.is_empty()).collect();
         let safe_part = |part: &&str| *part != "." && *part != ".." && !part.contains(':');
         if !link.starts_with(['/', '\\']) && parts.iter().all(safe_part) {
-            candidates.push(dir.join(parts.iter().collect::<std::path::PathBuf>()));
+            // A relative package link is measured from its document, before any cwd match.
+            candidates.insert(0, dir.join(parts.iter().collect::<std::path::PathBuf>()));
         }
         // Packagers can keep subfolders under Links (for example, Links/illustrations/logo.ai).
         // Preserve that suffix instead of flattening every resource to its basename.
@@ -118,7 +119,7 @@ pub(crate) fn resolve_packaged_links(document: &mut Document, dir: Option<&std::
     let Some(dir) = dir else { return };
     for asset in document.assets.values_mut() {
         let Some(link) = asset.link.as_deref() else { continue };
-        if link.len() > MAX_LINK_PATH_BYTES || crate::io::is_file(link) {
+        if link.len() > MAX_LINK_PATH_BYTES || (std::path::Path::new(link).is_absolute() && crate::io::is_file(link)) {
             continue;
         }
         let Some(path) = packaged_link_candidates(link, Some(dir)).into_iter().find(|p| crate::io::is_file(p)) else { continue };
@@ -175,6 +176,27 @@ mod tests {
     use std::sync::Arc;
 
     use super::*;
+
+    #[test]
+    fn relative_packaged_links_prefer_the_document_folder_to_the_working_directory() {
+        let shadow = tempfile::Builder::new().prefix(".dc-relative-link-").tempdir_in(std::env::current_dir().unwrap()).unwrap();
+        let package = tempfile::tempdir().unwrap();
+        let folder = shadow.path().file_name().unwrap();
+        let relative = format!("{}/logo.png", folder.to_string_lossy());
+        let packaged = package.path().join(folder).join("logo.png");
+        std::fs::create_dir_all(packaged.parent().unwrap()).unwrap();
+        let other = designcraft_render::Rendered { width: 2, height: 2, pixels: [0, 0, 0, 255].repeat(4) }.to_png();
+        std::fs::write(shadow.path().join("logo.png"), other).unwrap();
+        for embedded in [false, true] {
+            let (idml, png) = linked_idml(&relative, embedded).unwrap();
+            std::fs::write(&packaged, &png).unwrap();
+            let doc = import(&idml, Some(package.path())).unwrap();
+            let asset = doc.assets.values().next().unwrap();
+            assert_eq!(*asset.data, png, "embedded={embedded}: the package's pixels stay authoritative");
+            assert_eq!(asset.link.as_deref(), packaged.to_str(), "embedded={embedded}: resolve beside the document");
+            assert_eq!(super::super::links::status(asset), "ok");
+        }
+    }
 
     fn linked_idml(link: &str, embed_images: bool) -> Result<(Vec<u8>, Vec<u8>)> {
         let png = designcraft_render::Rendered { width: 2, height: 2, pixels: vec![255; 16] }.to_png();

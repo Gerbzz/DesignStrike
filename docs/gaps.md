@@ -53,7 +53,8 @@ Kind: **F** feature · **U** UI/UX · **T** typography · **FF** file format · 
 - **Missing:** a corpus test of real InDesign-authored IDML (via `storytold/photocraft-corpus` or
   a sibling) measuring what survives import → export → reopen in InDesign. Open bugs: frames not
   rendered without a warning (#193), `$ID/` font names reported missing (#338), no
-  `PDFAttribute` on export (#339), Package writes build-machine absolute paths (#340), drag-drop
+  `PDFAttribute` on export (#339), Package portability evidence (#340; relative-link source fix
+  ported on 2026-10-21, exact-head regression results in [PR #2](https://github.com/Gerbzz/DesignStrike/pull/2)), drag-drop
   open of IDML on the app icon (#211).
 - **Evidence:** importer coverage is broad (styles, tables, footnotes, xrefs, index, CJK, Arabic,
   verified in InDesign 2026 with synthetic files), but nothing is measured on real documents.

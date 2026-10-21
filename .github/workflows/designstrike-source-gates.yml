@@ -1,0 +1,51 @@
+name: DesignStrike source gates
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/designstrike-source-gates.yml
+      - Cargo.toml
+      - Cargo.lock
+      - rustfmt.toml
+      - crates/**
+      - apps/**
+      - xtask/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '3'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Record exact source and available space
+        run: |
+          git rev-parse HEAD
+          df -h /
+          test "$(df --output=avail -B1 / | tail -1)" -ge 21474836480
+      - name: Install pinned Rust and wasm target
+        run: |
+          rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt --target wasm32-unknown-unknown
+          rustup default 1.95.0
+      - name: Verify stroke validation and portable package regressions
+        run: |
+          cargo test --locked -p designcraft-engine stroke_type_tests
+          cargo test --locked -p designcraft-engine cmd::package::tests
+          cargo test --locked -p designcraft-engine cmd::interchange::tests
+      - name: Run all repository quality gates
+        run: cargo xtask ci
+      - name: Check remaining space
+        if: always()
+        run: df -h /
