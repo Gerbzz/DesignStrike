@@ -1,0 +1,56 @@
+{
+  "app": "DesignStrike",
+  "asset": "docs/images/designstrike-editor-windows2025-20261023.png",
+  "source_head": "3594b983788f2dc77e39be01ea22139374cc6160",
+  "run_id": 40019662156,
+  "run_url": "https://github.com/Gerbzz/DesignStrike/actions/runs/40019662156",
+  "artifact_id": 12529977952,
+  "artifact_zip_sha256": "21acf297a3e809037be75170ba49c945e7511a88914e1cd9623c0240ee8993d2",
+  "original_artifact_image_path": "editor.png",
+  "capture_method": "App-native ui.screenshot after real publication create, edit, save and reopen.",
+  "environment": "Standard hosted Windows 2025 runner",
+  "description": "The real native page-layout editor showing page three of a generated five-page publication. The document was edited, saved and reopened.",
+  "limitations": "Synthetic publication only; this native-editor image is not Windows PDF rasterization or production-print acceptance. Runtime and packaged icons are unchanged.",
+  "unmodified": true,
+  "sha256": "3c6967ba611be00ed55e497ebd334442650c6252575d43094d9df7508da1c287",
+  "git_blob_sha": "7307ba327fcb5879e00c401b34f3ed6b161c9497",
+  "bytes": 375040,
+  "dimensions": [
+    1024,
+    768
+  ],
+  "mode": "RGBA",
+  "decoded_rgba_sha256": "85fa62a8345b5e16c1250226c0ab9f6aaead19a14637c14c6bcc30dd6b654ac7",
+  "full_unique_colors": 7179,
+  "original_artifact_provenance": {
+    "repository": "Gerbzz/DesignStrike",
+    "source_head": "3594b983788f2dc77e39be01ea22139374cc6160",
+    "run_id": "40019662156",
+    "run_attempt": "1",
+    "captured_at_utc": "2026-10-23T20:38:47.7771734Z",
+    "method": "Running DesignStrike native editor ui.screenshot after real publication create, save and reopen",
+    "fixture": "Repository-generated synthetic test material; no user project or capture device opened",
+    "images": [
+      {
+        "file": "welcome.png",
+        "bytes": 101154,
+        "sha256": "406a6563d7aa5ccfa42e70a87bb0b22cabee50551be2334a4cd55bbc1953255b"
+      },
+      {
+        "file": "about.png",
+        "bytes": 599834,
+        "sha256": "864f763044a0c318858964ccc6b0d5b859eeac07a031c23a65a3326ea484d055"
+      },
+      {
+        "file": "editor.png",
+        "bytes": 375040,
+        "sha256": "3c6967ba611be00ed55e497ebd334442650c6252575d43094d9df7508da1c287"
+      },
+      {
+        "file": "edited-page.png",
+        "bytes": 123428,
+        "sha256": "64e0903832a6e4c753bc9555df9c49057aa08b08263a46d2cd02fa86cffd02a7"
+      }
+    ]
+  }
+}

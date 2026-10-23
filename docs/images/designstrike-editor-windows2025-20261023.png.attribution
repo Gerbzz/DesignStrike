@@ -1,0 +1,8 @@
+asset:        designstrike-editor-windows2025-20261023.png
+title:        DesignStrike current native editor screenshot
+author:       DesignStrike contributors
+source:       https://github.com/Gerbzz/DesignStrike/actions/runs/40019662156
+license:      MIT OR Apache-2.0
+license-file: LICENSE-MIT
+added:        2026-10-23
+notes:        Unmodified app-native screenshot at 3594b983788f2dc77e39be01ea22139374cc6160. The real native page-layout editor showing page three of a generated five-page publication. The document was edited, saved and reopened. Synthetic publication only; this native-editor image is not Windows PDF rasterization or production-print acceptance. Runtime and packaged icons are unchanged. Exact hashes: docs/images/designstrike-editor-windows2025-20261023.provenance.json.
