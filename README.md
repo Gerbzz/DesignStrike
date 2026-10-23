@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="assets/branding/DesignStrike-logo.png" alt="DesignStrike product logo" width="128" height="128">
+</p>
+
+<p align="center">
   <img src="assets/branding/PWDS-logo.png" alt="PWDS publisher mark" width="120">
 </p>
 <p align="center"><strong>Published by PWDS</strong></p>
@@ -55,3 +59,7 @@ The images and results above come from application work in [PR #1](https://githu
 The full foundation is pinned to [DesignCraft commit `a930276fd7462f3d9abd2fbb38544c94c0c911c8`](https://github.com/storytold/designcraft/commit/a930276fd7462f3d9abd2fbb38544c94c0c911c8). The original [MIT](LICENSE-MIT) and [Apache-2.0](LICENSE-APACHE) licences, [NOTICE](NOTICE) and [asset credits](ASSETS.md) remain. The inherited openly licensed cat app icon is temporary artwork, not a finished DesignStrike icon.
 
 DesignStrike is published by PWDS. Its existing mark has [separate brand terms](assets/branding/LICENSE-brand.txt). DesignStrike is independent of and not endorsed by ArtCraft.
+
+## Product artwork
+
+The DesignStrike product mark above has an original [SVG master](assets/branding/DesignStrike-logo.svg) and matching PNG. [Asset provenance](assets/branding/DesignStrike-logo.provenance.json) records how it was created and the exact file hashes. The PWDS publisher artwork and inherited software credits are unchanged. Existing screenshots retain the artwork visible in their original captured builds.

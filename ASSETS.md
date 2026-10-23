@@ -8,6 +8,8 @@ Generated-in-code art is original and has no file to list: the UI icon set (`cra
 
 | Asset | Author | Source | Licence | Notes |
 |---|---|---|---|---|
+| `assets/branding/DesignStrike-logo.svg` | DesignStrike contributors (original vector artwork) | Original work; see `assets/branding/DesignStrike-logo.provenance.json` | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) | README product mark; existing runtime and packaging unchanged |
+| `assets/branding/DesignStrike-logo.png` | DesignStrike contributors (original vector artwork) | Original work; see `assets/branding/DesignStrike-logo.provenance.json` | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) | README product mark; existing runtime and packaging unchanged |
 | `crates/ui-egui/src/i18n/uk.rs` (332 common phrases) | VectorCraft contributors | https://github.com/storytold/vectorcraft/blob/01f329aa99fa0c9517311c7b6cf7233ffc207742/crates/ui-egui/src/i18n/uk.tsv | MIT OR Apache-2.0 | Adapted for DesignCraft context; remaining Ukrainian phrases are original or credited below |
 | `crates/ui-egui/src/i18n/uk.rs` (68 common phrases) | PhotoCraft contributors | https://github.com/storytold/photocraft/blob/ed057bdc6fd89a858c5e0ea4eab158a2a7052dde/crates/ui-egui/src/i18n/uk.tsv | MIT OR Apache-2.0 | Adapted interface vocabulary |
 | `crates/ui-egui/src/i18n/uk.rs` (37 common phrases) | WordCraft contributors | https://github.com/storytold/wordcraft/blob/7fb7b013591e2593fbd038f90bbc535be318e5a3/crates/ui-egui/src/i18n/uk.tsv | MIT OR Apache-2.0 | Adapted interface vocabulary |

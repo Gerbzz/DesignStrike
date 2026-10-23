@@ -1,0 +1,28 @@
+{
+  "app": "DesignStrike",
+  "created_utc": "2026-10-23",
+  "source": "Original SVG artwork created for this application at the user's request.",
+  "method": "Original manually authored SVG paths/polygons; geometry-only, two solid colors; no gradients, shadows, text, animal, embedded bitmap, stock artwork, or external references.",
+  "description": "An editorial D built from offset sheets, with a clear open counter.",
+  "renderer": "Inkscape 1.4 (e7c3feb100, 2024-10-09), native SVG export at 1024 x 1024 pixels, transparent background opacity 0; no raster image editing.",
+  "license": "MIT OR Apache-2.0",
+  "scope": "Product artwork in the README. Existing publisher marks, screenshots, runtime artwork, and packaged icons remain unchanged.",
+  "assets": {
+    "svg": {
+      "path": "assets/branding/DesignStrike-logo.svg",
+      "sha256": "52144c1536065472f6f379cccf0ba4f1f6ad13f28d4323dade9ea2802020bd95",
+      "git_blob_sha": "bed32607831fe91a064bc9a02a3b92a8797e822f"
+    },
+    "png": {
+      "path": "assets/branding/DesignStrike-logo.png",
+      "sha256": "ddd1becdbcd0dede232eb5e7c89d17570bc1c7385574027ee643ab38aabc7e53",
+      "git_blob_sha": "b586bc57a6477eabc3aceb0f4d80b762be6e4a70",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "decoded_rgba_sha256": "55cba8bebdb6d3ee0073f27fdd297168a0154d44abb5c7a654d8d7bea5e77aab"
+    }
+  }
+}
