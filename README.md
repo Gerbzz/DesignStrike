@@ -13,9 +13,20 @@
 
 **Status:** Early alpha. Source builds only; no installer or production release is offered.
 
+![DesignStrike current native editor with a repository-generated synthetic fixture](docs/images/designstrike-editor-windows2025-20261023.png)
+
+*Unmodified 1024×768 native frame captured on a standard hosted Windows 2025 runner on 23 October 2026 in [successful run 40019662156](https://github.com/Gerbzz/DesignStrike/actions/runs/40019662156), exact source `3594b983788f2dc77e39be01ea22139374cc6160`. The real native page-layout editor showing page three of a generated five-page publication. The document was edited, saved and reopened. [Source, hashes and limits](docs/images/designstrike-editor-windows2025-20261023.provenance.json).*
+
+Synthetic publication only; this native-editor image is not Windows PDF rasterization or production-print acceptance. Runtime and packaged icons are unchanged.
+
+<details>
+<summary>Earlier native capture and its original provenance</summary>
+
 ![DesignStrike native Windows editor showing the synthetic publication](docs/images/designstrike-editor-windows2025.png)
 
 *An unmodified `ui.screenshot` from the real DesignStrike desktop process on a standard hosted Windows 2025 runner on 2026-10-15, showing page three of a synthetic publication. [See the green run](https://github.com/Gerbzz/DesignStrike/actions/runs/38746493794) and [the edited fifth page](docs/images/designstrike-edited-page-windows2025.png).*
+
+</details>
 
 DesignStrike is an independent early-alpha fork of the complete [DesignCraft](https://github.com/storytold/designcraft) Rust application. The workspace contains a native editor, document and layout engine, text composition, headless CLI, PDF and IDML interchange paths, and a web host. The features below are present in source; the [verification table](#validation-status) separates exercised behavior from untested capability.
 

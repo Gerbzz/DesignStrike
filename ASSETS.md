@@ -8,6 +8,7 @@ Generated-in-code art is original and has no file to list: the UI icon set (`cra
 
 | Asset | Author | Source | Licence | Notes |
 |---|---|---|---|---|
+| `docs/images/designstrike-editor-windows2025-20261023.png` | DesignStrike contributors | [Successful hosted run 40019662156](https://github.com/Gerbzz/DesignStrike/actions/runs/40019662156), source `3594b983788f2dc77e39be01ea22139374cc6160`; unmodified provenance-listed native frame | MIT OR Apache-2.0 | Synthetic native UI; adjacent provenance; no runtime-logo replacement |
 | `assets/branding/DesignStrike-logo.svg` | DesignStrike contributors (original vector artwork) | Original work; see `assets/branding/DesignStrike-logo.provenance.json` | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) | README product mark; existing runtime and packaging unchanged |
 | `assets/branding/DesignStrike-logo.png` | DesignStrike contributors (original vector artwork) | Original work; see `assets/branding/DesignStrike-logo.provenance.json` | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) | README product mark; existing runtime and packaging unchanged |
 | `crates/ui-egui/src/i18n/uk.rs` (332 common phrases) | VectorCraft contributors | https://github.com/storytold/vectorcraft/blob/01f329aa99fa0c9517311c7b6cf7233ffc207742/crates/ui-egui/src/i18n/uk.tsv | MIT OR Apache-2.0 | Adapted for DesignCraft context; remaining Ukrainian phrases are original or credited below |
