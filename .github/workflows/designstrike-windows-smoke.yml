@@ -8,6 +8,8 @@ on:
       - scripts/ci-windows-requirements.txt
       - scripts/ci_designstrike_*
       - scripts/ci_windows_native.ps1
+      - assets/branding/**
+      - assets/app-icon/**
       - apps/**
       - crates/**
       - Cargo.toml
@@ -80,6 +82,37 @@ jobs:
         run: |
           python scripts/ci_designstrike_publication.py target/smoke/designcraft-cli.exe "$env:RUNNER_TEMP/designstrike-windows"
           if ($LASTEXITCODE -ne 0) { throw 'Windows publication export failed' }
+      - name: Record exact source and native screenshot hashes
+        shell: pwsh
+        env:
+          SCREENSHOT_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $head = (git rev-parse HEAD).Trim()
+          if ($head -ne $env:SCREENSHOT_EXPECTED_HEAD) { throw 'Screenshot checkout differs from requested source head' }
+          $folder = (Join-Path $env:RUNNER_TEMP 'designstrike-windows')
+          $images = @()
+          foreach ($relative in @('welcome.png', 'about.png', 'editor.png', 'edited-page.png')) {
+            $file = Get-Item -LiteralPath (Join-Path $folder $relative)
+            if ($file.Length -eq 0) { throw "Empty native screenshot: $relative" }
+            $images += [ordered]@{
+              file = $relative
+              bytes = $file.Length
+              sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $file.FullName).Hash.ToLowerInvariant()
+            }
+          }
+          [ordered]@{
+            repository = $env:GITHUB_REPOSITORY
+            source_head = $head
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            captured_at_utc = [DateTime]::UtcNow.ToString('o')
+            method = 'Running DesignStrike native editor ui.screenshot after real publication create, save and reopen'
+            fixture = 'Repository-generated synthetic test material; no user project or capture device opened'
+            images = $images
+          } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $folder 'screenshot-provenance.json')
+          git diff --exit-code -- Cargo.lock
+          if ($LASTEXITCODE -ne 0) { throw 'Cargo.lock changed during capture' }
       - name: Preserve only small Windows publication evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -96,5 +129,6 @@ jobs:
             ${{ runner.temp }}/designstrike-windows/reopened-inspect.json
             ${{ runner.temp }}/designstrike-windows/cli-created-inspect.json
             ${{ runner.temp }}/designstrike-windows/desktop-status.json
-          retention-days: 1
+            ${{ runner.temp }}/designstrike-windows/screenshot-provenance.json
+          retention-days: 7
           if-no-files-found: ignore
