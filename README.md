@@ -13,6 +13,12 @@
 
 **Status:** Early alpha. Source builds only; no installer or production release is offered.
 
+## Rust direction and migration status
+
+- **Target:** Rust-native page layout and publishing, adapting the selected DesignCraft foundation rather than restarting its existing Rust implementation.
+- **Current implementation:** The [Cargo workspace](Cargo.toml) and [desktop entry point](apps/designcraft/src/main.rs) already use Rust for the editor, alongside document, text-composition, export and CLI crates.
+- **Remaining migration:** Extend and validate that foundation. Real-publication text flow, font substitution, PDF appearance, IDML interoperability, print fidelity and packaging remain acceptance work; the early alpha is not production-publishing completion.
+
 ![DesignStrike current native editor with a repository-generated synthetic fixture](docs/images/designstrike-editor-windows2025-20261023.png)
 
 *Unmodified 1024×768 native frame captured on a standard hosted Windows 2025 runner on 23 October 2026 in [successful run 40019662156](https://github.com/Gerbzz/DesignStrike/actions/runs/40019662156), exact source `3594b983788f2dc77e39be01ea22139374cc6160`. The real native page-layout editor showing page three of a generated five-page publication. The document was edited, saved and reopened. [Source, hashes and limits](docs/images/designstrike-editor-windows2025-20261023.provenance.json).*
