@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/branding/DesignStrike-logo.png" alt="DesignStrike product logo" width="128" height="128">
+  <img src="assets/branding/DesignStrike-logo.svg" alt="DesignStrike product logo" width="128" height="128">
 </p>
 
 <p align="center">
